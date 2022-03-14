@@ -27,11 +27,9 @@ func main() {
 	})
 
 	router.GET("/", func(c *gin.Context) {
-		localize := NewLocalizerFromContext(c)
-		c.HTML(http.StatusOK, "index", gin.H{
-			"title": localize("brand_title"),
-			"i":     localize,
-		})
+		localize, vars := localizerAndBaseVariables(c)
+		vars["title"] = localize("brand_title")
+		c.HTML(http.StatusOK, "index", vars)
 	})
 
 	router.POST("/search", func(c *gin.Context) {
@@ -40,12 +38,16 @@ func main() {
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 		}
-		localize := NewLocalizerFromContext(c)
-		c.HTML(http.StatusOK, "search", gin.H{
-			"title":   localize("search_title"),
-			"i":       localize,
-			"results": results,
-		})
+		localize, vars := localizerAndBaseVariables(c)
+		vars["title"] = localize("search_title")
+		vars["results"] = results
+		c.HTML(http.StatusOK, "search", vars)
+	})
+
+	router.GET("/create", func(c *gin.Context) {
+		localize, vars := localizerAndBaseVariables(c)
+		vars["title"] = localize("create_post_title")
+		c.HTML(http.StatusOK, "create", vars)
 	})
 
 	router.GET("/page", func(ctx *gin.Context) {
@@ -54,4 +56,13 @@ func main() {
 	})
 
 	router.Run("127.0.0.1:8080")
+}
+
+func localizerAndBaseVariables(c *gin.Context) (localizer, gin.H) {
+	localize := NewLocalizerFromContext(c)
+	vars := gin.H{
+		"title": localize("search_title"),
+		"i":     localize,
+	}
+	return localize, vars
 }

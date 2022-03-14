@@ -9,7 +9,7 @@ import (
 	"golang.org/x/text/language"
 )
 
-var filepath string = "resources/messages/"
+type localizer func(string) string
 
 var bundle *i18n.Bundle
 
@@ -18,7 +18,7 @@ func init() {
 	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
 	bundle.LoadMessageFile("resources/messages/en.toml")
 }
-func NewLocalizer(lang string, accept string) func(string) string {
+func NewLocalizer(lang string, accept string) localizer {
 	return func(message string) string {
 		localizer := i18n.NewLocalizer(bundle, lang, accept)
 		localizeConfig := i18n.LocalizeConfig{
@@ -32,7 +32,7 @@ func NewLocalizer(lang string, accept string) func(string) string {
 	}
 }
 
-func NewLocalizerFromContext(c *gin.Context) func(string) string {
+func NewLocalizerFromContext(c *gin.Context) localizer {
 	lang := c.Request.FormValue("lang")
 	accept := c.GetHeader("Accept-Language")
 	return NewLocalizer(lang, accept)

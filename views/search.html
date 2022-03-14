@@ -7,7 +7,7 @@
 {{define "content"}}
   <h1 >Results</h1>
   {{if eq .results.Count 0}} 
-    <p>No results found</p>
+    <p>No results found. Try <a href="/create">Creating a new Post</a></p>
   {{else}}
     <ul>
       {{range .results.Results}}
